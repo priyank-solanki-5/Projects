@@ -14,7 +14,7 @@ export default function BookCollection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const apiBase = "http://localhost:5000/api/books";
+  const apiBase = `https://bookstore-c1tt.onrender.com/api/books`;
 
   useEffect(() => {
     fetchBooks();
@@ -208,13 +208,13 @@ export default function BookCollection() {
                 <div className="mt-3 flex gap-2">
                   <button
                     onClick={() => handleUpdate(book)}
-                    className="flex-1 px-3 py-2 bg-yellow-500 text-white rounded"
+                    className="flex-1 btn-warning"
                   >
                     Update
                   </button>
                   <button
                     onClick={() => handleDelete(book._id || book.id)}
-                    className="flex-1 px-3 py-2 bg-red-500 text-white rounded"
+                    className="flex-1 btn-danger"
                   >
                     Delete
                   </button>

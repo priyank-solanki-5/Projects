@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Buttons";
 import axios from "axios";
 
 export default function Inventory() {
@@ -10,7 +11,7 @@ export default function Inventory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const apiBase = "http://localhost:5000/api/books";
+  const apiBase = `https://bookstore-c1tt.onrender.com/api/books`;
 
   const fetchBooks = async () => {
     setLoading(true);
@@ -105,110 +106,154 @@ export default function Inventory() {
   }, []);
 
   return (
-    <div className="p-6">
+    <div className="p-4 lg:p-6 max-w-7xl mx-auto">
       {/* Page Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">📦 Inventory</h2>
-        <button
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 lg:mb-4 gap-3">
+        <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold">
+          📦 Inventory
+        </h2>
+        <Button
           onClick={() => navigate("/add-book")}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+          variant="primary"
+          className="text-xs sm:text-sm"
         >
-          ➕ Add Book
-        </button>
+          <span>➕</span>
+          <span>Add Book</span>
+        </Button>
       </div>
 
       {/* Search Bar */}
-      <div className="mb-4">
+      <div className="mb-3">
         <input
           type="text"
           placeholder="🔍 Search by title or author..."
-          className="w-full p-2 border rounded-lg"
+          className="w-full p-2 sm:p-3 border rounded-lg text-sm sm:text-base"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
       {/* Books Table */}
-      {error && <div className="text-red-500 mb-3">{error}</div>}
-      <div className="bg-white shadow rounded-xl p-4 overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100 text-left text-sm font-medium">
-              <th className="p-3 border">ID</th>
-              <th className="p-3 border">Image</th>
-              <th className="p-3 border">Title</th>
-              <th className="p-3 border">Category</th>
-              <th className="p-3 border">Medium</th>
-
-              <th className="p-3 border">Author</th>
-              <th className="p-3 border">Price</th>
-              <th className="p-3 border">Stock</th>
-              <th className="p-3 border text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+      {error && (
+        <div className="text-red-500 mb-3 text-sm sm:text-base">{error}</div>
+      )}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[800px]">
+            <thead className="bg-gray-50">
               <tr>
-                <td colSpan="9" className="text-center py-6">
-                  Loading...
-                </td>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ID
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Image
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Title
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Category
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Medium
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Author
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Price
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Stock
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
-            ) : filteredBooks.length > 0 ? (
-              filteredBooks.map((book, idx) => (
-                <tr
-                  key={`${String(book._id || book.id)}-${idx}`}
-                  className="hover:bg-gray-50"
-                >
-                  <td className="p-3 border">
-                    {book._id || book.id || idx + 1}
-                  </td>
-                  <td className="p-3 border text-center">
-                    <img
-                      src={
-                        book.imageUrl ||
-                        book.image ||
-                        "2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys"
-                      }
-                      alt={book.title}
-                      className="w-12 h-16 object-cover mx-auto rounded"
-                    />
-                  </td>
-                  <td className="p-3 border">{book.title}</td>
-                  <td className="p-3 border">{book.category || "Other"}</td>
-                  <td className="p-3 border">{book.medium || "Gujarati"}</td>
-
-                  <td className="p-3 border">{book.author}</td>
-                  <td className="p-3 border">
-                    {typeof book.price === "number"
-                      ? `₹${book.price}`
-                      : book.price}
-                  </td>
-                  <td className="p-3 border">{book.stock}</td>
-                  <td className="p-3 border text-center space-x-2">
-                    <button
-                      onClick={() => handleEdit(book)}
-                      className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(book._id || book.id)}
-                      className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan="9"
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
+                    Loading...
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="9" className="text-center py-4 text-gray-500">
-                  ❌ No books found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ) : filteredBooks.length > 0 ? (
+                filteredBooks.map((book, idx) => (
+                  <tr
+                    key={`${String(book._id || book.id)}-${idx}`}
+                    className="hover:bg-gray-50"
+                  >
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {book._id || book.id || idx + 1}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-center">
+                      <img
+                        src={
+                          book.imageUrl ||
+                          book.image ||
+                          "2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys"
+                        }
+                        alt={book.title}
+                        className="w-12 h-16 object-cover mx-auto rounded"
+                      />
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {book.title}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {book.category || "Other"}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {book.medium || "Gujarati"}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {book.author}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {typeof book.price === "number"
+                        ? `₹${book.price}`
+                        : book.price}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {book.stock}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-center text-sm">
+                      <div className="flex gap-2 justify-center">
+                        <Button
+                          onClick={() => handleEdit(book)}
+                          variant="warning"
+                          className="px-3 text-xs color-yellow-500"
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(book._id || book.id)}
+                          variant="danger"
+                          className="px-3 text-xs"
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="9"
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
+                    ❌ No books found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

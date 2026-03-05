@@ -29,7 +29,7 @@ export const createBook = async (req, res) => {
     const { title, author, price, stock, imageUrl, image, category, medium } =
       req.body;
     const img = imageUrl || image || null;
-    if (!title || !author || price == null || stock == null) {
+    if (!title || price == null || stock == null) {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const bookDoc = new Book({

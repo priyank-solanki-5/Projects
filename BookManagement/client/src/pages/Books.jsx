@@ -8,8 +8,10 @@ export default function Books() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedMedium, setSelectedMedium] = useState("");
 
-  const API_BASE = "http://localhost:5000/api/books";
+  const API_BASE = `https://bookstore-c1tt.onrender.com/api/books`;
   const { addToCart } = useContext(CartContext) || {};
   const navigate = useNavigate();
   const [combos, setCombos] = useState([]);
@@ -21,7 +23,9 @@ export default function Books() {
 
   async function fetchCombos() {
     try {
-      const res = await axios.get("http://localhost:5000/api/combos");
+      const res = await axios.get(
+        `https://bookstore-c1tt.onrender.com/api/combos`
+      );
       setCombos(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Failed to load combos:", err);
@@ -49,23 +53,37 @@ export default function Books() {
   }
 
   const q = (search || "").trim().toLowerCase();
-  const filtered = q
-    ? books.filter((b) => {
-        return (
-          (b.title || "").toLowerCase().includes(q) ||
-          (b.author || "").toLowerCase().includes(q) ||
-          String(b._id || b.id || "")
-            .toLowerCase()
-            .includes(q)
-        );
-      })
-    : books;
+  let filtered = books;
+  if (q) {
+    filtered = filtered.filter((b) => {
+      return (
+        (b.title || "").toLowerCase().includes(q) ||
+        (b.author || "").toLowerCase().includes(q) ||
+        String(b._id || b.id || "")
+          .toLowerCase()
+          .includes(q)
+      );
+    });
+  }
+  if (selectedTitle) {
+    const t = selectedTitle.toLowerCase();
+    filtered = filtered.filter((b) => (b.title || "").toLowerCase() === t);
+  }
+  if (selectedMedium) {
+    const m = selectedMedium.toLowerCase();
+    filtered = filtered.filter((b) => (b.medium || "").toLowerCase() === m);
+  }
+
+  const titleOptions = Array.from(
+    new Set(books.map((b) => (b.title || "").trim()).filter(Boolean))
+  ).sort((a, b) => a.localeCompare(b));
+  const mediumOptions = ["Gujarati", "English"];
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">📚 Sell Books</h1>
+    <div className="p-2 lg:p-6">
+      <h1 className="text-xl lg:text-2xl font-bold mb-4">📚 Sell Books</h1>
 
-      <div className="mb-6">
+      <div className="mb-4 lg:mb-6 flex flex-col md:flex-row gap-3 md:items-center">
         <input
           type="text"
           placeholder="Search books by title, author or id..."
@@ -73,6 +91,41 @@ export default function Books() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <select
+          className="p-2 border rounded w-full md:w-64"
+          value={selectedTitle}
+          onChange={(e) => setSelectedTitle(e.target.value)}
+        >
+          <option value="">All Book Names</option>
+          {titleOptions.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+        <select
+          className="p-2 border rounded w-full md:w-48"
+          value={selectedMedium}
+          onChange={(e) => setSelectedMedium(e.target.value)}
+        >
+          <option value="">All Mediums</option>
+          {mediumOptions.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
+        {(selectedTitle || selectedMedium) && (
+          <button
+            className="btn-secondary !bg-white !text-blue-600 hover:!bg-blue-50 border border-blue-200"
+            onClick={() => {
+              setSelectedTitle("");
+              setSelectedMedium("");
+            }}
+          >
+            Clear Filters
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -80,7 +133,7 @@ export default function Books() {
       ) : error ? (
         <p className="text-red-600">{error}</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
           {filtered.length > 0 ? (
             filtered.map((book) => (
               <div
@@ -114,11 +167,16 @@ export default function Books() {
                   <div className="mt-2 flex flex-wrap gap-2 justify-center">
                     {combos
                       .filter((c) =>
-                        (c.books || []).some(
-                          (t) =>
-                            (t || "").trim().toLowerCase() ===
+                        (c.books || []).some((t) => {
+                          const title =
+                            typeof t === "object"
+                              ? t.title || t.name || ""
+                              : String(t || "");
+                          return (
+                            title.trim().toLowerCase() ===
                             (book.title || "").trim().toLowerCase()
-                        )
+                          );
+                        })
                       )
                       .map((c) => (
                         <button
@@ -138,19 +196,35 @@ export default function Books() {
                 </p>
                 <p className="text-xs text-gray-400">Stock: {book.stock}</p>
                 <button
+                  disabled={Number(book?.stock) <= 0}
+                  className={`mt-3 btn-primary ${
+                    Number(book?.stock) <= 0 ? "!bg-gray-400 cursor-not-allowed" : ""
+                  }`}
                   onClick={(e) => {
+                    if (Number(book?.stock) <= 0) {
+                      try {
+                        alert("❌ This book is out of stock");
+                      } catch (_) {}
+                      return;
+                    }
                     // play animation
                     animateToCart(
                       e.currentTarget.closest("div").querySelector("img")
                     );
 
-                    // always add to cart then go to cart
-                    addToCart && addToCart(book);
-                    {/*navigate("/cart");*/}
+                    // add a separate identical line (do not merge by default for this action)
+                    if (addToCart) {
+                      try {
+                        addToCart({ ...book, merge: false });
+                      } catch {
+                        console.error("addToCart failed");
+                      }
+                    }
+
+                    // stay on the current page after adding to cart
                   }}
-                  className="mt-3 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
                 >
-                  ➕ Add to Cart
+                  {Number(book?.stock) <= 0 ? "❌ Out of Stock" : "➕ Add to Cart"}
                 </button>
               </div>
             ))

@@ -1,1 +1,78 @@
 @import "tailwindcss";
+
+@layer base {
+
+  /* Responsive base sizing for all buttons */
+  button {
+    @apply px-3 py-2 sm:px-4 sm:py-2.5 rounded-md text-sm sm:text-base leading-none transition-colors;
+  }
+}
+
+@layer components {
+
+  /* Reusable button variants */
+  .btn {
+    @apply inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 rounded-md font-medium text-sm sm:text-base transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 active:translate-y-[1px];
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 rounded-md font-medium text-sm sm:text-base transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 active:translate-y-[1px] text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 focus:ring-green-300;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 rounded-md font-medium text-sm sm:text-base transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 active:translate-y-[1px] text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:ring-blue-300;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 rounded-md font-medium text-sm sm:text-base transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 active:translate-y-[1px] text-white bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 focus:ring-rose-300;
+  }
+
+  .btn-warning {
+    @apply inline-flex items-center justify-center px-3 py-2 sm:px-4 sm:py-2.5 rounded-md font-medium text-sm sm:text-base transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 active:translate-y-[1px] text-white bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 focus:ring-amber-300;
+  }
+
+  /* Table container for horizontal scroll on small screens */
+  .table-container {
+    @apply bg-white shadow rounded-xl p-2 sm:p-3 lg:p-4 overflow-x-auto;
+    min-width: 0; /* Allow shrinking below content size */
+    max-width: 100%;
+  }
+
+  /* Opinionated table styling used across pages */
+  .table {
+    @apply w-full border-collapse text-xs sm:text-sm lg:text-base;
+    min-width: 600px; /* Reduced minimum width for better foldable support */
+  }
+
+  .table thead tr {
+    @apply bg-gray-100 text-left font-medium;
+  }
+
+  .table th {
+    @apply p-2 sm:p-3 border whitespace-nowrap text-xs sm:text-sm lg:text-base;
+  }
+
+  .table td {
+    @apply p-2 sm:p-3 border align-top text-xs sm:text-sm lg:text-base;
+  }
+
+  /* Responsive table for foldable screens */
+  @media (max-width: 768px) {
+    .table th,
+    .table td {
+      @apply p-1 text-xs;
+    }
+  }
+
+  /* Ultra-wide screen optimizations */
+  @media (min-width: 1920px) {
+    .table-container {
+      @apply p-6;
+    }
+    
+    .table th,
+    .table td {
+      @apply p-4 text-lg;
+    }
+  }
+}

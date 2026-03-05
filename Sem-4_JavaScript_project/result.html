@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./Style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+    <title>Result</title>
+</head>
+<body>
+     <div class="section1 container mx-auto w-fit h-full">
+        <div class="msgdiv flex items-center justify-center">
+            <h1 class="text-center text-4xl block">🎊congratulations your Quiz result is🤩</h1>
+            <h1 class="text-center text-4xl block mt-5 sc"></h1>
+            <button class="btn bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-3 px-6 rounded-lg transition duration-300 mt-5 done">Done</button>
+        </div> 
+     </div>
+     <script>
+        let score = localStorage.getItem("score");
+        document.querySelector(".sc").innerHTML=`You got ${score} out of Arempted Questions`
+        let done=document.querySelector(".done")
+        done.addEventListener("click",()=>{
+            window.location=`./home.html`;
+        })
+     </script>  
+</body>
+</html>

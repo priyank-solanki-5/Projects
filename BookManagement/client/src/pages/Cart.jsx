@@ -18,53 +18,66 @@ const Cart = () => {
   );
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">🛒 Cart</h2>
+    <div className="p-2 lg:p-6">
+      <h2 className="text-xl lg:text-2xl font-bold mb-4">🛒 Cart</h2>
 
       {cartItems.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="w-full border">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="px-4 py-2 border">Item</th>
-                <th className="px-4 py-2 border">Type</th>
-                <th className="px-4 py-2 border">Price</th>
-                <th className="px-4 py-2 border">Quantity</th>
-                <th className="px-4 py-2 border">Total</th>
-                <th className="px-4 py-2 border">Action</th>
+        <div className="bg-white shadow rounded-xl p-4 overflow-x-auto">
+          <table className="w-full border-collapse min-w-[600px]">
+            <thead>
+              <tr className="bg-gray-100 text-left text-sm font-medium">
+                <th className="p-3 border">Item</th>
+                <th className="p-3 border">Type</th>
+                <th className="p-3 border">Price</th>
+                <th className="p-3 border">Quantity</th>
+                <th className="p-3 border">Total</th>
+                <th className="p-3 border text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {(cartItems || []).map((item) => {
-                const id = item._id || item.id || item.key;
+                // prefer cartItemId when present (unique per cart row)
+                const cartRowId =
+                  item.cartItemId || item._id || item.id || item.key;
                 return (
-                  <tr key={String(id)} className="text-center">
-                    <td className="border px-4 py-2">
+                  <tr key={String(cartRowId)} className="hover:bg-gray-50">
+                    <td className="p-3 border">
                       {item.title || item.name}
                     </td>
-                    <td className="border px-4 py-2">
+                    <td className="p-3 border">
                       {item.type || (item.isCombo ? "Combo" : "Book")}
                     </td>
-                    <td className="border px-4 py-2">₹{item.price}</td>
-                    <td className="border px-4 py-2">
+                    <td className="p-3 border">₹{item.price}</td>
+                    <td className="p-3 border">
                       <input
                         type="number"
                         min="1"
+                        max={item.stock || 999}
                         value={item.quantity || 1}
-                        onChange={(e) =>
-                          updateQuantity(id, parseInt(e.target.value || 1))
-                        }
+                        onChange={(e) => {
+                          const newQuantity = parseInt(e.target.value || 1);
+                          if (item.stock && newQuantity > item.stock) {
+                            alert(`Only ${item.stock} items available in stock`);
+                            return;
+                          }
+                          updateQuantity(cartRowId, newQuantity);
+                        }}
                         className="w-16 text-center border rounded"
                       />
+                      {item.stock && item.stock < 10 && (
+                        <div className="text-xs text-orange-600 mt-1">
+                          Only {item.stock} left
+                        </div>
+                      )}
                     </td>
-                    <td className="border px-4 py-2">
+                    <td className="p-3 border">
                       ₹
                       {(Number(item.price) || 0) * (Number(item.quantity) || 1)}
                     </td>
-                    <td className="border px-4 py-2">
+                    <td className="p-3 border text-center">
                       <button
-                        onClick={() => removeItem(id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                        onClick={() => removeItem(cartRowId)}
+                        className="btn-danger text-xs px-3 py-1"
                       >
                         ❌ Remove
                       </button>
@@ -80,7 +93,7 @@ const Cart = () => {
             <h3 className="text-xl font-bold">Grand Total: ₹{totalAmount}</h3>
             <button
               onClick={() => navigate("/checkout")}
-              className="bg-green-500 text-white px-5 py-2 rounded hover:bg-green-600"
+              className="btn-primary w-full"
             >
               ✅ Checkout
             </button>

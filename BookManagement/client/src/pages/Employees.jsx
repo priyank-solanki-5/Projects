@@ -13,7 +13,7 @@ export default function Employees() {
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
 
-  const API = "http://localhost:5000/api/employees";
+  const API = `https://bookstore-c1tt.onrender.com/api/employees`;
 
   useEffect(() => {
     fetchEmployees();
@@ -117,12 +117,12 @@ export default function Employees() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">👨‍💼 Employees</h2>
+    <div className="p-2 lg:p-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 lg:mb-6 gap-4">
+        <h2 className="text-xl lg:text-2xl font-bold">👨‍💼 Employees</h2>
         <button
           onClick={() => setShowForm((s) => !s)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center"
+          className="btn-secondary flex items-center"
         >
           <UserPlus className="mr-2 h-5 w-5" />{" "}
           {showForm ? "Cancel" : "Add Employee"}
@@ -156,9 +156,7 @@ export default function Employees() {
             />
           </div>
           <div className="mt-4">
-            <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-              Save
-            </button>
+            <button className="btn-primary">Save</button>
           </div>
         </form>
       )}
@@ -189,13 +187,13 @@ export default function Employees() {
                 <div className="mt-3 flex gap-2">
                   <button
                     onClick={() => startEdit(emp)}
-                    className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
+                    className="btn-warning"
                   >
                     ✏️ Edit
                   </button>
                   <button
                     onClick={() => deleteEmployee(emp._id || emp.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    className="btn-danger"
                   >
                     🗑 Delete
                   </button>

@@ -1,0 +1,101 @@
+<script>
+    let login_btn = document.querySelector("#login_btn");
+    let username = document.querySelector("#username");
+    let password = document.querySelector("#password");
+    let email = document.querySelector("#email");
+    let msg1 = document.querySelector("#msg1");
+    let msg2 = document.querySelector("#msg2");
+    let msg3 = document.querySelector(".errmaster");
+    let msg4 = document.querySelector("#msg4");
+    let err = 0;
+
+    login_btn.addEventListener("click", async () => {
+        // Validate inputs
+        if (username.value === "") {
+            msg1.innerHTML = `Please enter username, null value not allowed`;
+            setInterval(() => { msg1.innerHTML = ""; }, 2200);
+            err = 1;
+        } else {
+            let username_v = /^[a-zA-Z0-9]{3,}$/;
+            if (username_v.test(username.value)) {
+                msg1.style.color = "green";
+                msg1.innerHTML = "done";
+                err = 0;
+            } else {
+                msg1.style.color = "red";
+                msg1.innerHTML = "Invalid username";
+                setInterval(() => { msg1.innerHTML = ""; }, 2200);
+                err = 1;
+            }
+        }
+
+        if (password.value === "") {
+            msg2.innerHTML = `Please enter password, null value not allowed`;
+            setInterval(() => { msg2.innerHTML = ""; }, 2200);
+            err = 1;
+        } else {
+            let password_v = /^[a-zA-Z0-9]{3,}$/;
+            if (password_v.test(password.value)) {
+                msg2.style.color = "green";
+                msg2.innerHTML = "done";
+                err = 0;
+            } else {
+                msg2.style.color = "red";
+                msg2.innerHTML = "Invalid password";
+                setInterval(() => { msg2.innerHTML = ""; }, 2200);
+                err = 1;
+            }
+        }
+
+        if (email.value === "") {
+            msg4.innerHTML = `Please enter email, null value not allowed`;
+            setInterval(() => { msg4.innerHTML = ""; }, 2200);
+            err = 1;
+        } else {
+            let email_v = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (email_v.test(email.value)) {
+                msg4.style.color = "green";
+                msg4.innerHTML = "done";
+                err = 0;
+            } else {
+                msg4.style.color = "red";
+                msg4.innerHTML = "Invalid email";
+                setInterval(() => { msg4.innerHTML = ""; }, 2200);
+                err = 1;
+            }
+        }
+
+        if (err === 1) {
+            msg3.innerHTML = `Error occurred`;
+            setInterval(() => { msg3.innerHTML = ""; }, 2200);
+        } else {
+            // Send data to backend
+            try {
+                const response = await fetch('http://localhost:5000/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username.value,
+                        email: email.value,
+                        password: password.value,
+                    }),
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message);
+                    window.location.href = "./index.html"; // Redirect to login page
+                } else {
+                    msg3.innerHTML = data.message;
+                    setInterval(() => { msg3.innerHTML = ""; }, 2200);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                msg3.innerHTML = 'Error during registration';
+                setInterval(() => { msg3.innerHTML = ""; }, 2200);
+            }
+        }
+    });
+</script>
